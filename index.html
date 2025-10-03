@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hello Kitty Tic Tac Toe - Two Player Animated with Sounds</title>
+<title>Hello Kitty Tic Tac Toe - Fancy CSS</title>
 <style>
     body {
         font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -51,7 +51,7 @@
         animation: bounce 0.5s ease;
     }
 
-    /* Hello Kitty */
+    /* Hello Kitty upgraded */
     .kitty {
         width: 60px;
         height: 60px;
@@ -61,9 +61,9 @@
         height: 60px;
         background: #fff;
         border-radius: 50%;
+        border: 2px solid #ff99cc;
         position: relative;
         z-index: 2;
-        border: 2px solid #ff99cc;
     }
     .kitty .ear {
         width: 20px;
@@ -76,37 +76,61 @@
     }
     .kitty .ear.left { left: -5px; }
     .kitty .ear.right { right: -5px; }
+
+    .kitty .eye {
+        width: 6px;
+        height: 6px;
+        background: #000;
+        border-radius: 50%;
+        position: absolute;
+        top: 25px;
+    }
+    .kitty .eye.left { left: 18px; }
+    .kitty .eye.right { right: 18px; }
+
+    .kitty .nose {
+        width: 5px;
+        height: 5px;
+        background: #ff9966;
+        border-radius: 50%;
+        position: absolute;
+        top: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
     .kitty .bow {
         width: 18px;
         height: 18px;
         background: #ff3399;
         border-radius: 50%;
         position: absolute;
-        top: 10px;
-        left: 35px;
+        top: 5px;
+        left: 38px;
         z-index: 3;
+        box-shadow: -5px 0 0 #ff3399, 5px 0 0 #ff3399;
     }
 
-    /* Flower for player 2 */
+    /* Flower upgraded */
     .flower {
         width: 60px;
         height: 60px;
     }
     .flower .petal {
-        width: 20px;
-        height: 20px;
-        background: #ff66b3;
+        width: 22px;
+        height: 22px;
+        background: radial-gradient(circle at 40% 40%, #ff99cc, #ff3399);
         border-radius: 50%;
         position: absolute;
     }
-    .flower .petal1 { top: 0; left: 20px; }
-    .flower .petal2 { top: 20px; left: 0; }
-    .flower .petal3 { top: 20px; right: 0; }
-    .flower .petal4 { bottom: 0; left: 20px; }
+    .flower .petal1 { top: 0; left: 19px; }
+    .flower .petal2 { top: 19px; left: 0; }
+    .flower .petal3 { top: 19px; right: 0; }
+    .flower .petal4 { bottom: 0; left: 19px; }
     .flower .center {
         width: 20px;
         height: 20px;
-        background: #ffff66;
+        background: radial-gradient(circle at center, #ffff66, #ffcc33);
         border-radius: 50%;
         position: absolute;
         top: 20px;
@@ -152,8 +176,12 @@
         .kitty, .flower { width: 40px; height: 40px; }
         .kitty .head { width: 40px; height: 40px; }
         .kitty .ear { width: 14px; height: 14px; }
-        .kitty .bow { width: 12px; height: 12px; top: 6px; left: 25px; }
-        .flower .petal { width: 12px; height: 12px; }
+        .kitty .bow { width: 12px; height: 12px; top: 4px; left: 26px; box-shadow: -3px 0 0 #ff3399, 3px 0 0 #ff3399; }
+        .kitty .eye { width: 4px; height: 4px; top: 16px; }
+        .kitty .eye.left { left: 12px; }
+        .kitty .eye.right { right: 12px; }
+        .kitty .nose { width: 4px; height: 4px; top: 22px; }
+        .flower .petal { width: 14px; height: 14px; }
         .flower .center { width: 12px; height: 12px; top: 14px; left: 14px; }
     }
 </style>
@@ -177,21 +205,13 @@
 <button id="restart">Restart Game</button>
 <footer>© 2025 Samantha. All rights reserved.</footer>
 
-<!-- Sounds -->
-<audio id="kittySound" src="https://www.fesliyanstudios.com/play-mp3/387"></audio>
-<audio id="flowerSound" src="https://www.fesliyanstudios.com/play-mp3/408"></audio>
-<audio id="winSound" src="https://freesound.org/data/previews/331/331912_3248244-lq.mp3"></audio>
-
 <script>
     const cells = document.querySelectorAll('.cell');
     const message = document.getElementById('message');
     const restartBtn = document.getElementById('restart');
-    const kittySound = document.getElementById('kittySound');
-    const flowerSound = document.getElementById('flowerSound');
-    const winSound = document.getElementById('winSound');
 
     let board = ['', '', '', '', '', '', '', '', ''];
-    let currentPlayer = 'kitty'; // Player 1
+    let currentPlayer = 'kitty';
     let gameOver = false;
 
     const winCombos = [
@@ -206,7 +226,6 @@
             if(board[a] && board[a] === board[b] && board[a] === board[c]){
                 gameOver = true;
                 message.textContent = `${currentPlayer === 'kitty' ? '🐱 Hello Kitty' : '🌸 Flower'} wins! 🎉`;
-                winSound.play();
                 return;
             }
         }
@@ -223,6 +242,9 @@
             <div class="head"></div>
             <div class="ear left"></div>
             <div class="ear right"></div>
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="nose"></div>
             <div class="bow"></div>
         `;
         return kitty;
@@ -247,11 +269,6 @@
             board[index] = currentPlayer;
             const element = currentPlayer === 'kitty' ? createKitty() : createFlower();
             e.target.appendChild(element);
-
-            // Play sounds
-            if(currentPlayer === 'kitty'){ kittySound.play(); }
-            else { flowerSound.play(); }
-
             checkWinner();
             currentPlayer = currentPlayer === 'kitty' ? 'flower' : 'kitty';
         }
@@ -270,7 +287,10 @@
 </body>
 </html>
 
-   
+
+ 
+
+
 
     
 
