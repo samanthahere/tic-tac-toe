@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hello Kitty Tic Tac Toe</title>
+<title>Hello Kitty Tic Tac Toe - Animated</title>
 <style>
     body {
         font-family: 'Comic Sans MS', cursive, sans-serif;
         background-color: #ffe6f2;
         display: flex;
-        justify-content: center;
-        align-items: center;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
         min-height: 100vh;
         margin: 0;
     }
 
     h1 {
         color: #ff66b3;
-        text-align: center;
         margin-top: 20px;
+        text-align: center;
     }
 
     #game {
         display: grid;
         grid-template-columns: repeat(3, 120px);
-        grid-gap: 10px;
+        grid-gap: 12px;
         margin-top: 20px;
     }
 
@@ -33,11 +33,11 @@
         width: 120px;
         height: 120px;
         background-color: #fff0f5;
+        border-radius: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        border-radius: 20px;
         transition: transform 0.2s, background-color 0.2s;
     }
 
@@ -46,9 +46,56 @@
         background-color: #ffd6e6;
     }
 
-    .cell img {
-        width: 80px;
-        height: 80px;
+    .kitty {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        animation: bounce 0.5s ease;
+    }
+
+    .kitty .head {
+        width: 60px;
+        height: 60px;
+        background: #fff;
+        border-radius: 50%;
+        position: relative;
+        z-index: 2;
+        border: 2px solid #ff99cc;
+    }
+
+    .kitty .ear {
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 50%;
+        border: 2px solid #ff99cc;
+        position: absolute;
+        top: -10px;
+    }
+
+    .kitty .ear.left {
+        left: -5px;
+    }
+
+    .kitty .ear.right {
+        right: -5px;
+    }
+
+    .kitty .bow {
+        width: 18px;
+        height: 18px;
+        background: #ff3399;
+        border-radius: 50%;
+        position: absolute;
+        top: 10px;
+        left: 35px;
+        z-index: 3;
+    }
+
+    @keyframes bounce {
+        0% { transform: translateY(-30px); opacity: 0; }
+        50% { transform: translateY(5px); opacity: 1; }
+        100% { transform: translateY(0); opacity: 1; }
     }
 
     #message {
@@ -88,10 +135,13 @@
             width: 80px;
             height: 80px;
         }
-        .cell img {
-            width: 50px;
-            height: 50px;
+        .kitty {
+            width: 40px;
+            height: 40px;
         }
+        .kitty .head { width: 40px; height: 40px; }
+        .kitty .ear { width: 14px; height: 14px; }
+        .kitty .bow { width: 12px; height: 12px; top: 6px; left: 25px; }
     }
 </style>
 </head>
@@ -112,22 +162,15 @@
 
 <div id="message"></div>
 <button id="restart">Restart Game</button>
-
 <footer>© 2025 Samantha. All rights reserved.</footer>
-
-<!-- Sounds -->
-<audio id="clickSound" src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3"></audio>
-<audio id="winSound" src="https://freesound.org/data/previews/331/331912_3248244-lq.mp3"></audio>
 
 <script>
     const cells = document.querySelectorAll('.cell');
     const message = document.getElementById('message');
     const restartBtn = document.getElementById('restart');
-    const clickSound = document.getElementById('clickSound');
-    const winSound = document.getElementById('winSound');
 
     let board = ['', '', '', '', '', '', '', '', ''];
-    let currentPlayer = 'kitty'; // player 1 image
+    let currentPlayer = 'kitty';
     let gameOver = false;
 
     const winCombos = [
@@ -136,39 +179,41 @@
         [0,4,8],[2,4,6]
     ];
 
-    const images = {
-        kitty: 'https://i.ibb.co/svF0f2Z/hellokitty.png', // Hello Kitty
-        flower: 'https://i.ibb.co/Z6BqcFq/flower.png' // Flower
-    };
-
     function checkWinner() {
         for (let combo of winCombos) {
-            const [a, b, c] = combo;
-            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            const [a,b,c] = combo;
+            if(board[a] && board[a] === board[b] && board[a] === board[c]){
                 gameOver = true;
-                message.textContent = `${currentPlayer === 'kitty' ? '🐱 Hello Kitty' : '🌸 Flower'} wins! 🎉`;
-                winSound.play();
+                message.textContent = `🐱 Hello Kitty wins! 🎉`;
                 return;
             }
         }
-        if (!board.includes('')) {
+        if(!board.includes('')) {
             gameOver = true;
-            message.textContent = `It's a tie! 😸`;
+            message.textContent = "It's a tie! 😸";
         }
+    }
+
+    function createKitty() {
+        const kitty = document.createElement('div');
+        kitty.classList.add('kitty');
+        kitty.innerHTML = `
+            <div class="head"></div>
+            <div class="ear left"></div>
+            <div class="ear right"></div>
+            <div class="bow"></div>
+        `;
+        return kitty;
     }
 
     function handleClick(e) {
         const index = e.target.dataset.index;
-        if (board[index] === '' && !gameOver) {
+        if(board[index] === '' && !gameOver){
             board[index] = currentPlayer;
-
-            const img = document.createElement('img');
-            img.src = images[currentPlayer];
-            e.target.appendChild(img);
-
-            clickSound.play();
+            const kitty = createKitty();
+            e.target.appendChild(kitty);
             checkWinner();
-            currentPlayer = currentPlayer === 'kitty' ? 'flower' : 'kitty';
+            currentPlayer = 'kitty'; // single-player animation for now
         }
     }
 
@@ -184,5 +229,7 @@
 </script>
 </body>
 </html>
+
+
 
 
